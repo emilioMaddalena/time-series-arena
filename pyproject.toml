@@ -14,3 +14,11 @@ dependencies = [
     "statsmodels>=0.14.4",
     "xgboost>=2.1.4",
 ]
+
+[tool.ruff]
+include = ["pyproject.toml", "*.py", "*.ipynb"]
+line-length = 100
+
+[tool.ruff.lint]
+select = ["D", "N", "I", "E501", "E"]
+ignore = ["ANN", "D410", "D413", "D100", "D211", "D213", "D203"]
