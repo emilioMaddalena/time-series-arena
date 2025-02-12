@@ -1,16 +1,16 @@
 import warnings
 from itertools import product
-from typing import List, Union
+from typing import Iterable, Union
 
 import numpy as np
 import statsmodels.api as sm
 
 
-def train_arima(
+def learn_arima(
     train_data: np.ndarray,
-    p_values: Union[int, List],
-    d_values: Union[int, List],
-    q_values: Union[int, List],
+    p_values: Union[int, Iterable[int]],
+    d_values: Union[int, Iterable[int]],
+    q_values: Union[int, Iterable[int]],
 ) -> sm.tsa.ARIMA:
     """Fit ARIMA models and return the best model in terms of log likelihood."""
     warnings.filterwarnings("ignore")
