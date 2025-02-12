@@ -1,9 +1,0 @@
-{
-    "description": "The residual fuel oils CO2 emissions over several decades.",
-    "frequency": "monthly",
-    "time_format": "YYYYMM",
-    "value_unit": "MMT",
-    "start_date": "1973-01-01",
-    "end_date": "2016-07-01",
-    "source": "https://www.kaggle.com/datasets/txtrouble/carbon-emissions/data"
-}
