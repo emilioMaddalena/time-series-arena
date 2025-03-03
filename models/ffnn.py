@@ -94,10 +94,6 @@ class FeedForwardNeuralNetwork(TimeSeriesModel):
         """Predict the last frac % of the test time series (out-of-sample)."""
         pass
 
-    def predict(self, context: np.ndarray, steps: int) -> np.ndarray:
-        """Predict (generic) N steps ahead given some tim-series context."""
-        pass
-
 
 class BaseFeedForwardNeuralNetwork(nn.Module):
     """A simple FF neutral network."""
