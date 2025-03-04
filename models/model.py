@@ -20,11 +20,22 @@ class TimeSeriesModel(ABC):
         pass
 
     @abstractmethod
-    def predict_training_set(self):
-        """Predict on the training set (in-sample)."""
+    def predict_training_set(self) -> np.ndarray:
+        """Predict on the training set (in-sample).
+        
+        N.B. These are closed-loop predictions, i.e., the model always has access to 
+        the ground-truth values. Its predictions are never fed back into the model.
+        """
         pass
 
     @abstractmethod
-    def predict_test_set(self, test_series: np.ndarray) -> np.ndarray:
-        """Predict on the test set (out-of-sample)."""
+    def predict(self, n_steps: int, context: np.ndarray, use_training_context: bool = False) -> np.ndarray:
+        """Predict the next n_steps steps given the context.
+        
+        N.B. These are open-loop predictions, i.e., the model does not have access to
+        any new information while predicting, only the provided context. As a result
+        its predictions are fed back into the model.
+
+        If use_training_context is True, the model will use the training series as the context.
+        """
         pass
