@@ -69,34 +69,56 @@ class FeedForwardNeuralNetwork(TimeSeriesModel):
         model.load_state_dict(torch.load(temp_model_file))
         print("Finished Training!")
 
-        torch.set_grad_enabled(False) # gradients not needed anymore
         self.model = model
+        self.model.eval()
         torch.set_grad_enabled(False)  
 
-    def predict_training_set(self):
+    def predict_training_set(self) -> np.ndarray:
         """Predict the last frac % of the training time series (in-sample)."""
         #! in the future, just return the predicted values
         y_pred = np.array([])
         y_true = np.array([])
 
         self.model.eval()
-        with torch.no_grad():
-            for idx in range(len(self.train_dataset)):
-                x, y = self.train_dataset[idx]
-                output = self.model(x.reshape(-1, self.model.input_size))
-                y_pred = np.concatenate((y_pred, output.numpy().flatten()))
-                y_true = np.concatenate((y_true, y.numpy().flatten()))
-                
-        # Plot the predictions and ground-truth values
-        plt.figure(figsize=(12, 6))
-        plt.plot(y_pred, label='Predictions')
-        plt.plot(y_true, 'k--', label='Ground Truth')
-        plt.legend()
-        plt.show()
+        for idx in range(len(self.train_dataset)):
+            x, y = self.train_dataset[idx]
+            output = self.model(x.reshape(-1, self.model.input_size))
+            y_pred = np.concatenate((y_pred, output.numpy().flatten()))
+            y_true = np.concatenate((y_true, y.numpy().flatten()))
 
-    def predict_test_set(self, test_series: float) -> np.ndarray:
-        """Predict the last frac % of the test time series (out-of-sample)."""
-        pass
+        # Prepend window_size NaN values to match original series length
+        y_pred = np.concatenate((np.full(self.model.input_size, np.nan), y_pred))
+        return y_pred
+
+    def predict(self, n_steps: int, context: np.ndarray = None) -> np.ndarray:
+        """Predict the next n_steps steps given the context.
+
+        N.B. These are open-loop predictions, i.e., the model does not have access to
+        any new information while predicting, only the provided context. As a result
+        its predictions are fed back into the model.
+
+        If no context is provided, it is assumed to be the training set.
+        """
+        # Determine the input context x
+        if context:
+            if len(context) < self.model.input_size:
+                raise ValueError(
+                    f"Context length ({len(context)}) is shorter than the required input size ({self.model.input_size})."
+                )
+            x = context[-self.model.input_size :].copy()
+        else:
+            x = self.train_series[-self.model.input_size :].copy()
+
+        # Make predictions one by one, feeding back each prediction
+        predictions = np.empty(n_steps)
+        for i in range(n_steps):
+            # Get prediction
+            output = self.model(torch.from_numpy(x.reshape(1, self.model.input_size)).float())
+            next_pred = output.item()
+            predictions[i] = next_pred
+            # Discard oldest value and append the latest prediction
+            x = np.append(x[1:], next_pred)
+        return predictions
 
 
 class BaseFeedForwardNeuralNetwork(nn.Module):
