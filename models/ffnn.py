@@ -67,6 +67,8 @@ class FeedForwardNeuralNetwork(TimeSeriesModel):
 
         model.load_state_dict(torch.load(temp_model_file))
         print("Finished Training!")
+
+        torch.set_grad_enabled(False) # gradients not needed anymore
         self.model = model
 
     def predict_training_set(self):
