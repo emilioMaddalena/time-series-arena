@@ -30,6 +30,7 @@ class FeedForwardNeuralNetwork(TimeSeriesModel):
         seed: int = None,
     ):
         """Use mini-batch stochastic gradient descent to learn the neural net."""
+        torch.set_grad_enabled(True)
         if seed:
             torch.manual_seed(seed)
 
@@ -70,6 +71,7 @@ class FeedForwardNeuralNetwork(TimeSeriesModel):
 
         torch.set_grad_enabled(False) # gradients not needed anymore
         self.model = model
+        torch.set_grad_enabled(False)  
 
     def predict_training_set(self):
         """Predict the last frac % of the training time series (in-sample)."""
