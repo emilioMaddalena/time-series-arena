@@ -29,7 +29,7 @@ class TimeSeriesModel(ABC):
         pass
 
     @abstractmethod
-    def predict(self, n_steps: int, context: np.ndarray, use_training_context: bool = False) -> np.ndarray:
+    def predict(self, n_steps: int, context: np.ndarray, use_training_context: bool = True) -> np.ndarray:
         """Predict the next n_steps steps given the context.
         
         N.B. These are open-loop predictions, i.e., the model does not have access to
